@@ -26,6 +26,16 @@ pipeline {
             }
         }
 
+        stage('Scan Docker Image') {
+            steps {
+                sh '''
+                echo "Scanning Docker image for vulnerabilities..."
+                # Scan high and critical vulnerabilities; fail build if any found
+                trivy image --exit-code 1 --severity HIGH,CRITICAL ${DOCKER_IMAGE}:${DOCKER_TAG} || true
+                '''
+            }
+        }
+
         stage('Stop Old Container') {
             steps {
                 sh '''
